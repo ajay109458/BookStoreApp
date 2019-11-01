@@ -46,5 +46,30 @@ public class BookDAO {
 			return session.createQuery("from Book", Book.class).list();
 		}
 	}
+	
+	public Book getBookById(int bookId) {
+		try (Session session = HibernateUtils.getSessionFactory().openSession()){
+            return (Book) session.get(Book.class, bookId);
+        } 
+	}
+	
+	public Book updateBook(Book book) {
+		Transaction transaction = null;
+
+		try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+			transaction = session.beginTransaction();
+			session.save(book);
+			transaction.commit();
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+		
+		return book;
+	}
 
 }
